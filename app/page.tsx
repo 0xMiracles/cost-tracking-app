@@ -1,9 +1,13 @@
 import { getRecentExpenses } from '@/app/actions/expenses'
+import { getCategories } from '@/app/actions/categories'
 import { CategoryBreakdown } from '@/components/category-breakdown'
 import { ExpenseForm } from '@/components/expense-form'
 import { ExpenseList } from '@/components/expense-list'
+import { NavTabs } from '@/components/nav-tabs'
+import { PinScreen } from '@/components/pin-screen'
 import { SpendingChart } from '@/components/spending-chart'
 import { formatRub } from '@/lib/categories'
+import { getAuthStatus } from '@/lib/pin'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +16,11 @@ function toISODate(d: Date): string {
 }
 
 export default async function HomePage() {
-  const expenses = await getRecentExpenses()
+  const authStatus = await getAuthStatus()
+  if (authStatus === 'setup') return <PinScreen mode="setup" />
+  if (authStatus === 'locked') return <PinScreen mode="enter" />
+
+  const [expenses, categories] = await Promise.all([getRecentExpenses(), getCategories()])
 
   const now = new Date()
   const todayISO = toISODate(now)
@@ -27,17 +35,16 @@ export default async function HomePage() {
   const dayOfMonth = now.getDate()
   const avgPerDay = dayOfMonth > 0 ? monthTotal / dayOfMonth : 0
 
-  // Daily totals for the last 14 days
-  const chartData = Array.from({ length: 14 }, (_, i) => {
-    const d = new Date(now)
-    d.setDate(d.getDate() - (13 - i))
+  // Daily totals for the current month (1st through today)
+  const chartData = Array.from({ length: dayOfMonth }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth(), i + 1)
     const iso = toISODate(d)
     const total = expenses
       .filter((e) => e.spentAt === iso)
       .reduce((sum, e) => sum + Number(e.amount), 0)
     return {
       date: iso,
-      label: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short' }).format(d),
+      label: String(i + 1),
       total,
       isToday: iso === todayISO,
     }
@@ -56,11 +63,12 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-5xl flex-col gap-6 px-4 py-8 md:px-6">
-      <header className="flex items-center justify-between">
+      <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-balance">Мои расходы</h1>
           <p className="text-sm text-muted-foreground">Личный учёт затрат</p>
         </div>
+        <NavTabs />
       </header>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -108,12 +116,12 @@ export default async function HomePage() {
       <div className="grid gap-4 md:grid-cols-5">
         <section className="rounded-3xl bg-card p-6 md:col-span-2" aria-label="Добавить расход">
           <h2 className="mb-4 text-lg font-semibold">Новый расход</h2>
-          <ExpenseForm />
+          <ExpenseForm categories={categories} />
         </section>
 
         <div className="flex flex-col gap-4 md:col-span-3">
           <section className="rounded-3xl bg-card p-6" aria-label="Динамика расходов">
-            <h2 className="mb-2 text-lg font-semibold">Последние 14 дней</h2>
+            <h2 className="mb-2 text-lg font-semibold capitalize">{monthName}</h2>
             <SpendingChart data={chartData} />
           </section>
 

@@ -1,17 +1,3 @@
-export const CATEGORIES = [
-  'Продукты',
-  'Кафе и рестораны',
-  'Транспорт',
-  'Жильё и коммуналка',
-  'Здоровье',
-  'Развлечения',
-  'Одежда',
-  'Подписки',
-  'Другое',
-] as const
-
-export type Category = (typeof CATEGORIES)[number]
-
 export function formatRub(value: number): string {
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
