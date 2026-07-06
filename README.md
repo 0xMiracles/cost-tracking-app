@@ -6,7 +6,7 @@ A personal expense tracking app: quick expense entry, custom categories, monthly
 
 ---
 
-## 🇷🇺 Как создать себе такой же сайт (инструкция от А до Я)
+## 🇷🇺 Как создать себе такой же сайт (инструкция от А до Я) 
 
 Ваши данные будут храниться в **вашей собственной базе**, а вход защищён **вашим собственным кодом** — этот репозиторий не даёт никому доступа к чужим данным.
 
@@ -47,7 +47,7 @@ A personal expense tracking app: quick expense entry, custom categories, monthly
 
 ---
 
-## EN How to create your own copy (step-by-step guide)
+## 🇪🇳 How to create your own copy (step-by-step guide)
 
 Your data lives in **your own database**, protected by **your own PIN code** — this repository gives no one access to anyone else's data.
 
