@@ -6,7 +6,7 @@ import { ExpenseList } from '@/components/expense-list'
 import { NavTabs } from '@/components/nav-tabs'
 import { PinScreen } from '@/components/pin-screen'
 import { SpendingChart } from '@/components/spending-chart'
-import { formatRub } from '@/lib/categories'
+import { formatDateRu, formatRub } from '@/lib/categories'
 import { getAuthStatus } from '@/lib/pin'
 
 export const dynamic = 'force-dynamic'
@@ -44,7 +44,7 @@ export default async function HomePage() {
       .reduce((sum, e) => sum + Number(e.amount), 0)
     return {
       date: iso,
-      label: String(i + 1),
+      label: formatDateRu(iso),
       total,
       isToday: iso === todayISO,
     }
@@ -134,7 +134,7 @@ export default async function HomePage() {
 
       <section className="rounded-3xl bg-card p-6" aria-label="История расходов">
         <h2 className="mb-4 text-lg font-semibold">История</h2>
-        <ExpenseList expenses={expenses} />
+        <ExpenseList expenses={expenses} categories={categories} />
       </section>
     </main>
   )

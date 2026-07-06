@@ -1,11 +1,11 @@
+import { getCategories } from '@/app/actions/categories'
 import { getExpensesBetween } from '@/app/actions/expenses'
 import { CategoryBreakdown } from '@/components/category-breakdown'
-import { ExpenseList } from '@/components/expense-list'
+import { DayExplorer } from '@/components/day-explorer'
 import { MonthPicker } from '@/components/month-picker'
 import { NavTabs } from '@/components/nav-tabs'
 import { PinScreen } from '@/components/pin-screen'
-import { SpendingChart } from '@/components/spending-chart'
-import { formatRub } from '@/lib/categories'
+import { formatDateRu, formatRub } from '@/lib/categories'
 import { getAuthStatus } from '@/lib/pin'
 
 export const dynamic = 'force-dynamic'
@@ -37,7 +37,10 @@ export default async function AnalysisPage({
   const fromISO = `${month}-01`
   const toISO = `${month}-${String(daysInMonth).padStart(2, '0')}`
 
-  const expenses = await getExpensesBetween(fromISO, toISO)
+  const [expenses, categories] = await Promise.all([
+    getExpensesBetween(fromISO, toISO),
+    getCategories(),
+  ])
 
   const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0)
 
@@ -59,7 +62,7 @@ export default async function AnalysisPage({
       .reduce((sum, e) => sum + Number(e.amount), 0)
     return {
       date: iso,
-      label: String(i + 1),
+      label: formatDateRu(iso),
       total: dayTotal,
       isToday: iso === todayISO,
     }
@@ -128,22 +131,13 @@ export default async function AnalysisPage({
         {expenses.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">Нет расходов за этот месяц</p>
         ) : (
-          <SpendingChart data={chartData} />
+          <DayExplorer chartData={chartData} expenses={expenses} categories={categories} />
         )}
       </section>
 
       <section className="rounded-3xl bg-card p-6" aria-label="Расходы по категориям">
         <h2 className="mb-4 text-lg font-semibold">По категориям</h2>
         <CategoryBreakdown items={categoryTotals} />
-      </section>
-
-      <section className="rounded-3xl bg-card p-6" aria-label="Все траты за месяц">
-        <h2 className="mb-4 text-lg font-semibold">Все траты за месяц</h2>
-        {expenses.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Нет расходов за этот месяц</p>
-        ) : (
-          <ExpenseList expenses={expenses} />
-        )}
       </section>
     </main>
   )

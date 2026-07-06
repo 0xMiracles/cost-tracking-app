@@ -32,6 +32,39 @@ export async function addExpense(formData: FormData) {
   return { success: true }
 }
 
+export async function updateExpense(id: number, formData: FormData) {
+  if (!(await isAuthed())) return { error: 'Нет доступа' }
+
+  const amount = Number.parseFloat(String(formData.get('amount') ?? '').replace(',', '.'))
+  const category = String(formData.get('category') ?? '').trim()
+  const note = String(formData.get('note') ?? '').trim()
+  const spentAt = String(formData.get('spentAt') ?? '').trim()
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { error: 'Введите корректную сумму' }
+  }
+  if (!category) {
+    return { error: 'Выберите категорию' }
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(spentAt)) {
+    return { error: 'Укажите дату' }
+  }
+
+  await db
+    .update(expenses)
+    .set({
+      amount: amount.toFixed(2),
+      category,
+      note: note || null,
+      spentAt,
+    })
+    .where(eq(expenses.id, id))
+
+  revalidatePath('/')
+  revalidatePath('/analysis')
+  return { success: true }
+}
+
 export async function deleteExpense(id: number) {
   if (!(await isAuthed())) return { error: 'Нет доступа' }
 
