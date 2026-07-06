@@ -47,7 +47,7 @@ A personal expense tracking app: quick expense entry, custom categories, monthly
 
 ---
 
-## 🇬🇧 How to create your own copy (step-by-step guide)
+## EN How to create your own copy (step-by-step guide)
 
 Your data lives in **your own database**, protected by **your own PIN code** — this repository gives no one access to anyone else's data.
 
