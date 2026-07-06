@@ -95,11 +95,3 @@ pnpm install
 # add DATABASE_URL to .env.development.local, then:
 pnpm dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Built with v0
-
-This repository is linked to a [v0](https://v0.app) project. Start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` automatically deploys.
-
-[Continue working on v0 →](https://v0.app/chat/projects/prj_0Nqev5UcnbJumcqalDpP4Rp36mTc)
