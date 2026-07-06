@@ -2,10 +2,13 @@
 
 import { db } from '@/lib/db'
 import { expenses } from '@/lib/db/schema'
-import { desc, eq, gte } from 'drizzle-orm'
+import { isAuthed } from '@/lib/pin'
+import { and, desc, eq, gte, lte } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 export async function addExpense(formData: FormData) {
+  if (!(await isAuthed())) return { error: 'Нет доступа' }
+
   const amount = Number.parseFloat(String(formData.get('amount') ?? '').replace(',', '.'))
   const category = String(formData.get('category') ?? '').trim()
   const note = String(formData.get('note') ?? '').trim()
@@ -30,8 +33,18 @@ export async function addExpense(formData: FormData) {
 }
 
 export async function deleteExpense(id: number) {
+  if (!(await isAuthed())) return { error: 'Нет доступа' }
+
   await db.delete(expenses).where(eq(expenses.id, id))
   revalidatePath('/')
+}
+
+export async function getExpensesBetween(fromISO: string, toISO: string) {
+  return db
+    .select()
+    .from(expenses)
+    .where(and(gte(expenses.spentAt, fromISO), lte(expenses.spentAt, toISO)))
+    .orderBy(desc(expenses.spentAt), desc(expenses.createdAt))
 }
 
 export async function getRecentExpenses(limit = 200) {

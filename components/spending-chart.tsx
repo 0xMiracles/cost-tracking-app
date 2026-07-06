@@ -12,7 +12,7 @@ type DayPoint = {
 
 export function SpendingChart({ data }: { data: DayPoint[] }) {
   return (
-    <div className="h-48 w-full" role="img" aria-label="График расходов за последние 14 дней">
+    <div className="h-48 w-full" role="img" aria-label="График расходов по дням">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 8, right: 0, bottom: 0, left: 0 }}>
           <XAxis
