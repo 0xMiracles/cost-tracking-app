@@ -1,5 +1,6 @@
 import { getExpensesBetween } from '@/app/actions/expenses'
 import { CategoryBreakdown } from '@/components/category-breakdown'
+import { ExpenseList } from '@/components/expense-list'
 import { MonthPicker } from '@/components/month-picker'
 import { NavTabs } from '@/components/nav-tabs'
 import { PinScreen } from '@/components/pin-screen'
@@ -134,6 +135,15 @@ export default async function AnalysisPage({
       <section className="rounded-3xl bg-card p-6" aria-label="Расходы по категориям">
         <h2 className="mb-4 text-lg font-semibold">По категориям</h2>
         <CategoryBreakdown items={categoryTotals} />
+      </section>
+
+      <section className="rounded-3xl bg-card p-6" aria-label="Все траты за месяц">
+        <h2 className="mb-4 text-lg font-semibold">Все траты за месяц</h2>
+        {expenses.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">Нет расходов за этот месяц</p>
+        ) : (
+          <ExpenseList expenses={expenses} />
+        )}
       </section>
     </main>
   )
